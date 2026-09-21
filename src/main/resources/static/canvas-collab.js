@@ -950,7 +950,8 @@ window.CaseCollab = {
             });
         }
 
-        const socket = new SockJS('http://localhost:8080/ws-case');
+        const wsEndpoint = (window.location && window.location.origin) ? (window.location.origin + '/ws-case') : '/ws-case';
+        const socket = new SockJS(wsEndpoint);
         stompClient = new window.StompJs.Client({
             webSocketFactory: () => socket,
             connectHeaders: { Authorization: `Bearer ${jwtToken}` },

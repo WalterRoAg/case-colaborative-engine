@@ -25,6 +25,40 @@ function getAuthHeader() {
     return { 'Authorization': cleanToken };
 }
 
+function copiarTextoSeguro(texto, mensajeExito) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(texto).then(() => {
+            alert(mensajeExito || ('Copiado: ' + texto));
+        }).catch(() => {
+            _fallbackCopiar(texto, mensajeExito);
+        });
+    } else {
+        _fallbackCopiar(texto, mensajeExito);
+    }
+}
+
+function _fallbackCopiar(texto, mensajeExito) {
+    const textArea = document.createElement("textarea");
+    textArea.value = texto;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-999999px";
+    textArea.style.top = "-999999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+        const exitoso = document.execCommand('copy');
+        if (exitoso) {
+            alert(mensajeExito || ('Copiado: ' + texto));
+        } else {
+            prompt("Copia este código de sesión:", texto);
+        }
+    } catch (err) {
+        prompt("Copia este código de sesión:", texto);
+    }
+    document.body.removeChild(textArea);
+}
+
 // ==============================================
 // DOM ELEMENTS
 // ==============================================
@@ -461,10 +495,15 @@ function mostrarVistaWorkspace(sessionToken, proyectoId, nombreProyecto) {
         lblProjectName.textContent = nombreProyecto;
     }
     if (lblSessionToken) {
-        lblSessionToken.textContent = '#' + sessionToken.substring(0, 8) + '...';
+        const textEl = document.getElementById('lbl-session-token-text');
+        if (textEl) {
+            textEl.textContent = '#' + sessionToken.substring(0, 8) + '...';
+        } else {
+            lblSessionToken.textContent = '#' + sessionToken.substring(0, 8) + '...';
+        }
+        lblSessionToken.title = 'Haz clic para copiar el código de invitación: ' + sessionToken;
         lblSessionToken.onclick = () => {
-            navigator.clipboard.writeText(sessionToken);
-            alert('Token copiado: ' + sessionToken);
+            copiarTextoSeguro(sessionToken, '¡Código de invitación copiado al portapapeles!\n\nToken: ' + sessionToken);
         };
     }
 
