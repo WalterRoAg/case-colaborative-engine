@@ -1,0 +1,21 @@
+# Maven
+target/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# Aplicación móvil
+case_collaborative_mobile/
+
+# APK
+case-collaborative-mobile.apk
+
+# Variables de entorno y secretos
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log

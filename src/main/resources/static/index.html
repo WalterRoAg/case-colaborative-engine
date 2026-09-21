@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CASE Collaborative - UML Workspace</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Iconos para UI -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ============================================== -->
+    <!-- VIEW 1: AUTHENTICATION                         -->
+    <!-- ============================================== -->
+    <div id="view-auth" class="view-container flex">
+        <div class="card auth-card">
+            <div class="text-center" style="margin-bottom: 24px;">
+                <span class="material-icons" style="font-size: 32px; color: var(--accent-secondary);">share</span>
+                <h2>CASE Collaborative</h2>
+                <p class="text-xs">UML 2.5 • Real-time • Shared</p>
+            </div>
+            
+            <div class="tabs" id="auth-tabs">
+                <div class="tab active" data-target="login-form">Iniciar Sesión</div>
+                <div class="tab" data-target="register-form">Registrarse</div>
+            </div>
+            
+            <form id="login-form" class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Correo electrónico</label>
+                    <input type="email" placeholder="correo@empresa.com" id="login-correo">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Contraseña</label>
+                    <input type="password" placeholder="••••••••" id="login-password">
+                </div>
+                <button type="button" class="btn btn-primary w-full" id="btn-login" style="margin-top: 8px;">
+                    Ingresar al Workspace
+                </button>
+                <a href="#" class="text-center text-xs text-secondary" style="margin-top: 8px; text-decoration: none;">¿Olvidaste tu contraseña?</a>
+            </form>
+
+            <form id="register-form" class="flex flex-col gap-4 hidden">
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Nombre</label>
+                    <input type="text" placeholder="Ej. Carlos" id="reg-nombre">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Apellido</label>
+                    <input type="text" placeholder="Ej. Gómez" id="reg-apellido">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Correo electrónico</label>
+                    <input type="email" placeholder="correo@empresa.com" id="reg-correo">
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label class="text-sm text-secondary">Contraseña</label>
+                    <input type="password" placeholder="••••••••" id="reg-password">
+                </div>
+                <button type="button" class="btn btn-primary w-full" id="btn-register" style="margin-top: 8px;">
+                    Crear Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW 2: DASHBOARD                              -->
+    <!-- ============================================== -->
+    <div id="view-dashboard" class="view-container hidden">
+        <header class="topbar">
+            <div class="flex items-center gap-2">
+                <span class="material-icons" style="color: var(--accent-secondary);">share</span>
+                <span style="font-weight: 600;">CASE Collaborative</span>
+            </div>
+            <div class="flex items-center gap-3">
+                <div class="avatar" id="dash-user-avatar">CG</div>
+                <div class="flex flex-col">
+                    <span class="text-sm" style="font-weight: 500;" id="dash-user-name">Carlos Gómez</span>
+                    <span class="tag tag-green" style="width: fit-content;" id="dash-user-role">ANFITRIÓN</span>
+                </div>
+                <button class="btn btn-ghost" id="btn-logout" title="Cerrar Sesión">
+                    <span class="material-icons">logout</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="dashboard-content">
+            <div style="margin-bottom: 32px;">
+                <h1>Workspace</h1>
+                <p>Inicia una nueva sesión colaborativa o únete a una existente.</p>
+            </div>
+
+            <div class="grid-2" style="margin-bottom: 40px;">
+                <!-- Nueva Sesión -->
+                <div class="card flex flex-col gap-4">
+                    <span class="material-icons" style="color: var(--accent-primary); font-size: 32px;">add_box</span>
+                    <div>
+                        <h2>Iniciar Nueva Sesión Colaborativa</h2>
+                        <p>Crea un lienzo UML y genera un token para invitar a tu equipo.</p>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-secondary">Nombre del Proyecto</label>
+                        <input type="text" placeholder="Sistema de Facturación v1" id="input-nombre-proyecto">
+                    </div>
+                    <button class="btn btn-primary w-full" id="btn-crear-sala">
+                        Crear Sala y Abrir Lienzo
+                    </button>
+                </div>
+
+                <!-- Unirse a Sesión -->
+                <div class="card flex flex-col gap-4">
+                    <span class="material-icons" style="color: var(--accent-secondary); font-size: 32px;">link</span>
+                    <div>
+                        <h2>Unirse a una Sala Existente</h2>
+                        <p>Ingresa el Session Token UUID que compartió el anfitrión.</p>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-sm text-secondary">Session Token (UUID)</label>
+                        <input type="text" placeholder="d3b07384-6e1a-4f2b-9c3d-..." id="sessionToken">
+                    </div>
+                    <button class="btn btn-secondary w-full" id="btnConnect" style="margin-top: auto;">
+                        Unirse a la Sesión
+                    </button>
+                </div>
+            </div>
+
+            <!-- PROYECTOS RECIENTES -->
+            <main style="padding: 32px 0;">
+                <h3 style="font-size: 14px; color: var(--text-secondary); margin-bottom: 16px; letter-spacing: 0.05em; text-transform: uppercase;">Proyectos Recientes</h3>
+                
+                <div id="dashboard-proyectos-container" class="flex flex-col gap-3">
+                    <!-- Se inyectarán dinámicamente desde app.js -->
+                    <div style="color: var(--text-secondary); font-size: 14px;">Cargando proyectos...</div>
+                </div>
+            </main>
+        </main>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- VIEW 3: WORKSPACE (CANVAS)                     -->
+    <!-- ============================================== -->
+    <div id="view-workspace" class="view-container hidden">
+        <header class="canvas-header">
+            <div class="flex items-center gap-4">
+                <button class="btn btn-ghost" id="btn-back-dashboard">
+                    <span class="material-icons" style="font-size: 18px;">arrow_back_ios</span> Volver
+                </button>
+                <div style="font-weight: 600;" id="workspace-project-name">Facturación</div>
+                <div class="tag" id="lbl-session-token" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border-color); cursor: pointer;" title="Copiar Token">
+                    #d3b07384...
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2" id="colaboradores-container" style="display: none;">
+                <!-- Los colaboradores se inyectarán dinámicamente -->
+            </div>
+
+            <div class="flex items-center gap-2">
+                <!-- Guardar Avance en BD -->
+                <button class="btn btn-primary" id="btn-save-cloud" style="padding: 6px 14px; background: #2563EB; font-weight: 600; box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);" title="Guardar todo el diagrama y posiciones en la Base de Datos">
+                    <span class="material-icons" style="font-size: 16px;">cloud_upload</span> Guardar Avance
+                </button>
+
+                <!-- Importar Foto / Imagen con IA -->
+                <button class="btn btn-secondary" id="btn-open-import-image" onclick="window.openImageImportModal && window.openImageImportModal()" style="padding: 6px 12px; border-color: #8B5CF6; color: #C4B5FD; font-weight: 500;" title="Escanear o Importar Foto de Diagrama UML (Digital o a Mano)">
+                    <span class="material-icons" style="font-size: 16px; color: #A78BFA;">photo_camera</span> Foto a UML
+                </button>
+
+                <!-- XMI -->
+                <input type="file" id="input-file-xmi" accept=".xml,.xmi" style="display:none">
+                <button class="btn btn-secondary" id="btn-import-xmi" style="padding: 6px 12px;" onclick="document.getElementById('input-file-xmi').click()">
+                    Importar XMI <span class="material-icons" style="font-size: 16px;">upload</span>
+                </button>
+                <button class="btn btn-secondary" id="btn-export-xmi" style="padding: 6px 12px;" title="Exportar XMI">
+                    <span class="material-icons" style="font-size: 16px;">download</span> XMI
+                </button>
+                
+                <!-- .CASE -->
+                <input type="file" id="input-file-case" accept=".case" style="display:none">
+                <button class="btn btn-secondary" id="btn-import-case" style="padding: 6px 12px; border-color: var(--accent-secondary);" onclick="document.getElementById('input-file-case').click()" title="Abrir Proyecto (.case)">
+                    Abrir <span class="material-icons" style="font-size: 16px; color: var(--accent-secondary);">folder_open</span>
+                </button>
+                <button class="btn btn-secondary" id="btn-export-case" style="padding: 6px 12px; border-color: var(--accent-secondary);" title="Descargar copia (.case)">
+                    <span class="material-icons" style="font-size: 16px; color: var(--accent-secondary);">save</span> .case
+                </button>
+
+                <!-- ZIP -->
+                <button class="btn btn-primary" id="btn-preview-code" style="padding: 6px 12px; background: #6366F1;" title="Previsualizar y Descargar ZIP">
+                    <span class="material-icons" style="font-size: 16px;">visibility</span> Ver Código
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI Panel (Draggable/Floating) -->
+        <div class="floating-panel kpi-panel" id="kpi-panel">
+            <div class="flex items-center justify-between" style="margin-bottom: 12px;">
+                <h3 style="margin: 0; font-size: 13px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 6px;">
+                    <span class="material-icons" style="font-size: 16px; color: var(--accent-primary);">analytics</span>
+                    Métricas (KPIs)
+                </h3>
+                <span class="material-icons btn-collapse-kpi" id="btn-toggle-kpi" style="font-size: 16px; cursor: pointer; color: var(--text-secondary);" title="Minimizar Métricas">expand_less</span>
+            </div>
+            <div id="kpi-panel-body">
+                <div class="kpi-row">
+                    <span>CBO Promedio</span> 
+                    <div class="flex items-center gap-2">
+                        <span id="kpi-cbo" class="kpi-value" style="font-size: 14px; font-weight: 600;">2.4</span>
+                        <span class="tag tag-green">Bajo Acoplamiento</span>
+                    </div>
+                </div>
+                <div class="kpi-row">
+                    <span>Violaciones UML</span> 
+                    <div class="flex items-center gap-2">
+                        <span id="kpi-violaciones" class="kpi-value" style="font-size: 14px; font-weight: 600;">0</span>
+                        <span class="tag tag-green">Sin errores</span>
+                    </div>
+                </div>
+                <div class="kpi-row">
+                    <span>Productividad</span> 
+                    <span id="kpi-elementos-min" class="kpi-value" style="font-weight: 500;">4.2 elem/min</span>
+                </div>
+                <div class="kpi-row" style="margin-bottom: 16px;">
+                    <span>Compilabilidad OMT</span> 
+                    <div class="flex items-center gap-2">
+                        <span id="kpi-tasa" class="kpi-value" style="font-weight: 600;">100%</span>
+                        <span class="tag" style="background: rgba(59, 130, 246, 0.2); color: var(--accent-primary);">Óptimo</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary w-full" id="btn-update-kpi" style="padding: 6px; font-size: 12px;">Recalcular Métricas</button>
+                <ul id="kpi-advertencias-lista" style="color: var(--status-warning); padding-left: 16px; font-size: 11px; margin-top: 12px;"></ul>
+            </div>
+        </div>
+
+        <!-- HTML Overlay for Classes (DOM Mockups for visuals) -->
+        <!-- In a real implementation this would be generated dynamically by canvas-collab.js -->
+        <!-- Contenedor dinámico de cursores de colaboradores remotos -->
+        <div id="cursores-container" style="position: absolute; top:0; left:0; width:100%; height:100%; pointer-events: none; z-index: 5;"></div>
+
+        <!-- ============================================== -->
+        <!-- TOOLBOX PROFESIONAL (ESTILO ENTERPRISE ARCH.)  -->
+        <!-- ============================================== -->
+        <div class="ea-toolbox" id="ea-toolbox">
+            <div class="ea-toolbox-header">
+                <span class="flex items-center gap-2">
+                    <span class="material-icons" style="font-size: 16px; color: var(--accent-primary);">widgets</span>
+                    Toolbox
+                </span>
+                <span class="material-icons" id="btn-toggle-toolbox" style="font-size: 16px; cursor: pointer;" title="Colapsar / Expandir">unfold_less</span>
+            </div>
+            
+            <div class="ea-toolbox-search">
+                <input type="text" id="toolbox-search" placeholder="Buscar elemento..." style="width: 100%;">
+            </div>
+
+            <div class="ea-toolbox-content" id="toolbox-items-container">
+                <!-- SECCIÓN: CLASS ELEMENTS -->
+                <div class="ea-section-header" data-section="class-elements">
+                    <span class="material-icons" style="font-size: 14px;">expand_more</span>
+                    <span>Class Elements</span>
+                </div>
+                <div class="ea-section-items" id="sec-class-elements">
+                    <div class="ea-tool-item" data-action="create-class" data-kind="CLASS">
+                        <div class="ea-tool-icon" style="color: #3B82F6;">
+                            <span class="material-icons">view_agenda</span>
+                        </div>
+                        <span>Class</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="create-class" data-kind="INTERFACE">
+                        <div class="ea-tool-icon" style="color: #10B981;">
+                            <span class="material-icons">radio_button_checked</span>
+                        </div>
+                        <span>Interface</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="create-class" data-kind="ENUM">
+                        <div class="ea-tool-icon" style="color: #F59E0B;">
+                            <span class="material-icons">format_list_numbered</span>
+                        </div>
+                        <span>Enumeration</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="create-class" data-kind="DATATYPE">
+                        <div class="ea-tool-icon" style="color: #8B5CF6;">
+                            <span class="material-icons">data_object</span>
+                        </div>
+                        <span>Data Type</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="create-class" data-kind="PACKAGE">
+                        <div class="ea-tool-icon" style="color: #EC4899;">
+                            <span class="material-icons">folder</span>
+                        </div>
+                        <span>Package</span>
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: CLASS RELATIONSHIPS -->
+                <div class="ea-section-header" data-section="class-relations">
+                    <span class="material-icons" style="font-size: 14px;">expand_more</span>
+                    <span>Class Relationships</span>
+                </div>
+                <div class="ea-section-items" id="sec-class-relations">
+                    <div class="ea-tool-item" data-action="relation" data-type="ASOCIACION">
+                        <div class="ea-tool-icon" style="color: #94A3B8;">
+                            <span class="material-icons">horizontal_rule</span>
+                        </div>
+                        <span>Associate</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="ASOCIACION_DIRIGIDA">
+                        <div class="ea-tool-icon" style="color: #60A5FA;">
+                            <span class="material-icons">trending_flat</span>
+                        </div>
+                        <span>Direct Association</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="GENERALIZACION">
+                        <div class="ea-tool-icon" style="color: #38BDF8;">
+                            <span class="material-icons">north_east</span>
+                        </div>
+                        <span>Generalize</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="COMPOSICION">
+                        <div class="ea-tool-icon" style="color: #A78BFA;">
+                            <span class="material-icons">diamond</span>
+                        </div>
+                        <span>Compose</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="AGREGACION">
+                        <div class="ea-tool-icon" style="color: #C084FC;">
+                            <span class="material-icons">check_box_outline_blank</span>
+                        </div>
+                        <span>Aggregate</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="REALIZACION">
+                        <div class="ea-tool-icon" style="color: #34D399;">
+                            <span class="material-icons">more_horiz</span>
+                        </div>
+                        <span>Realize</span>
+                    </div>
+                    <div class="ea-tool-item" data-action="relation" data-type="DEPENDENCIA">
+                        <div class="ea-tool-icon" style="color: #F87171;">
+                            <span class="material-icons">arrow_right_alt</span>
+                        </div>
+                        <span>Dependency</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 8px 12px; border-top: 1px solid var(--border-color); background: #181B20;">
+                <button class="btn btn-secondary w-full flex items-center justify-center gap-1" id="btn-select-all" style="padding: 6px; font-size: 11px;">
+                    <span class="material-icons" style="font-size: 14px;">select_all</span> Seleccionar Todo (Ctrl+A)
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra flotante de acciones rápidas sobre la clase seleccionada -->
+        <div id="class-quick-actions" class="floating-class-actions hidden">
+            <button id="btn-quick-inspect" title="Inspeccionar y editar atributos">
+                <span class="material-icons" style="font-size: 14px; color: var(--accent-primary);">tune</span> Inspeccionar / Atributos
+            </button>
+            <button id="btn-quick-connect" title="Crear relación desde esta clase">
+                <span class="material-icons" style="font-size: 14px; color: var(--accent-secondary);">timeline</span> Relacionar
+            </button>
+            <button id="btn-quick-delete" title="Eliminar clase del diagrama" style="color: var(--status-danger);">
+                <span class="material-icons" style="font-size: 14px;">delete</span>
+            </button>
+        </div>
+
+        <!-- Barra flotante de acciones rápidas sobre la relación seleccionada -->
+        <div id="relation-quick-actions" class="floating-class-actions hidden">
+            <button id="btn-quick-inspect-rel" title="Editar propiedades de la relación">
+                <span class="material-icons" style="font-size: 14px; color: #38BDF8;">edit</span> Editar Relación
+            </button>
+            <button id="btn-quick-delete-rel" title="Eliminar relación del diagrama" style="color: var(--status-danger);">
+                <span class="material-icons" style="font-size: 14px;">delete</span>
+            </button>
+        </div>
+
+        <!-- MODAL: INSPECTOR Y EDITOR DE RELACIÓN -->
+        <div id="modal-inspector-relation" class="modal-overlay hidden">
+            <div class="inspector-card" style="width: 460px;">
+                <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons" style="color: #38BDF8;">timeline</span>
+                        <h3 style="margin: 0; font-size: 16px;">Propiedades de la Relación UML</h3>
+                    </div>
+                    <button class="btn btn-ghost" id="btn-close-rel-inspector" style="padding: 4px;">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs text-secondary">Nombre / Rol de la Relación</label>
+                        <input type="text" id="inspector-rel-name" placeholder="Ej. gestiona, contiene, 1..*">
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs text-secondary">Tipo de Relación UML 2.5</label>
+                        <select id="inspector-rel-type" style="background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: 6px;">
+                            <option value="ASOCIACION">Asociación (Association)</option>
+                            <option value="ASOCIACION_DIRIGIDA">Asociación Dirigida (Direct Association)</option>
+                            <option value="GENERALIZACION">Generalización / Herencia (Generalize)</option>
+                            <option value="COMPOSICION">Composición (Compose)</option>
+                            <option value="AGREGACION">Agregación (Aggregate)</option>
+                            <option value="REALIZACION">Realización (Realize)</option>
+                            <option value="DEPENDENCIA">Dependencia (Dependency)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid-2" style="gap: 12px;">
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs text-secondary">Multiplicidad Origen</label>
+                            <input type="text" id="inspector-rel-card-orig" placeholder="1, 0..1, *, 1..*">
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <label class="text-xs text-secondary">Multiplicidad Destino</label>
+                            <input type="text" id="inspector-rel-card-dest" placeholder="1, 0..1, *, 1..*">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-color); padding-top: 16px; margin-top: 8px;">
+                    <button class="btn btn-ghost" id="btn-inspector-delete-rel" style="color: var(--status-danger); font-size: 13px;">
+                        <span class="material-icons" style="font-size: 16px;">delete</span> Eliminar Relación
+                    </button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary" id="btn-inspector-cancel-rel">Cancelar</button>
+                        <button class="btn btn-primary" id="btn-inspector-save-rel">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL: INSPECTOR Y EDITOR DE CLASE & ATRIBUTOS -->
+        <div id="modal-inspector-class" class="modal-overlay hidden">
+            <div class="inspector-card">
+                <div class="flex justify-between items-center" style="border-bottom: 1px solid var(--border-color); padding-bottom: 12px;">
+                    <div class="flex items-center gap-2">
+                        <span class="material-icons" style="color: var(--accent-primary);">tune</span>
+                        <h3 style="margin: 0; font-size: 16px;">Propiedades de la Clase UML</h3>
+                    </div>
+                    <button class="btn btn-ghost" id="btn-close-inspector" style="padding: 4px;">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+
+                <!-- Datos Principales de la Clase -->
+                <div class="grid-2" style="gap: 12px;">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs text-secondary">Nombre de la Clase</label>
+                        <input type="text" id="inspector-class-name" placeholder="Ej. Cliente">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs text-secondary">Estereotipo / Tipo</label>
+                        <select id="inspector-class-stereotype" style="background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); padding: 8px; border-radius: 6px;">
+                            <option value="CLASS">Class (Clase Estándar)</option>
+                            <option value="INTERFACE">&lt;&lt;interface&gt;&gt;</option>
+                            <option value="ENUM">&lt;&lt;enumeration&gt;&gt;</option>
+                            <option value="DATATYPE">&lt;&lt;dataType&gt;&gt;</option>
+                            <option value="PACKAGE">&lt;&lt;package&gt;&gt;</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sección de Atributos -->
+                <div>
+                    <div class="flex justify-between items-center" style="margin-bottom: 8px;">
+                        <span class="text-xs text-secondary" style="font-weight: 600; text-transform: uppercase;">Atributos de la Clase</span>
+                        <span class="text-xs text-secondary" id="inspector-attr-count">0 atributos</span>
+                    </div>
+
+                    <!-- Lista dinámica de atributos -->
+                    <div id="inspector-attr-list" class="flex flex-col gap-2" style="max-height: 180px; overflow-y: auto; margin-bottom: 12px; padding-right: 4px;">
+                        <!-- Se inyectan dinámicamente -->
+                    </div>
+
+                    <!-- Formulario para agregar nuevo atributo -->
+                    <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; border: 1px dashed var(--border-color);">
+                        <span class="text-xs text-secondary" style="display: block; margin-bottom: 8px; font-weight: 600;">+ Agregar Nuevo Atributo</span>
+                        <div class="flex gap-2 items-center">
+                            <select id="new-attr-vis" style="width: 75px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px; font-size: 12px;">
+                                <option value="private">- Private</option>
+                                <option value="public">+ Public</option>
+                                <option value="protected"># Protected</option>
+                                <option value="package">~ Package</option>
+                            </select>
+                            <input type="text" id="new-attr-name" placeholder="nombreAtributo" style="flex: 1; padding: 6px; font-size: 12px;">
+                            <select id="new-attr-type" style="width: 110px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px; font-size: 12px;">
+                                <option value="String">String</option>
+                                <option value="Long">Long</option>
+                                <option value="Integer">Integer</option>
+                                <option value="Double">Double</option>
+                                <option value="Boolean">Boolean</option>
+                                <option value="LocalDate">LocalDate</option>
+                                <option value="BigDecimal">BigDecimal</option>
+                                <option value="List">List&lt;&gt;</option>
+                            </select>
+                            <label class="flex items-center gap-1 text-xs" style="cursor: pointer;" title="Clave Primaria">
+                                <input type="checkbox" id="new-attr-pk" style="width: auto;"> PK
+                            </label>
+                            <button class="btn btn-primary" id="btn-add-attr-confirm" style="padding: 6px 12px; font-size: 12px;">
+                                Agregar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer de Acciones -->
+                <div class="flex justify-between items-center" style="border-top: 1px solid var(--border-color); padding-top: 16px;">
+                    <button class="btn btn-ghost" id="btn-inspector-delete-class" style="color: var(--status-danger); font-size: 13px;">
+                        <span class="material-icons" style="font-size: 16px;">delete</span> Eliminar Clase
+                    </button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary" id="btn-inspector-cancel">Cancelar</button>
+                        <button class="btn btn-primary" id="btn-inspector-save">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add Class Modal (Diálogo de Creación Rápida) -->
+        <div id="modal-add-class" class="hidden" style="position: absolute; top: 120px; left: 260px; z-index: 30; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); width: 280px; box-shadow: var(--shadow-lg);">
+            <h3 style="margin-top:0; font-size: 14px; margin-bottom: 12px;" id="modal-add-class-title">Nueva Clase UML</h3>
+            <input type="text" id="input-class-name" placeholder="Nombre (Ej. Producto)" class="w-full" style="margin-bottom: 12px; padding: 6px; font-size: 13px;">
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Atributo Inicial (Opcional):</div>
+            <div class="flex gap-2" style="margin-bottom: 12px;">
+                <input type="text" id="input-attr-name" placeholder="id" style="width: 50%; padding: 6px; font-size: 12px;">
+                <input type="text" id="input-attr-type" placeholder="Long" style="width: 50%; padding: 6px; font-size: 12px;">
+            </div>
+            <div class="flex gap-2 justify-end">
+                <button class="btn btn-ghost" id="btn-cancel-class" style="padding: 4px 8px; font-size: 12px;">Cancelar</button>
+                <button class="btn btn-primary" id="btn-confirm-class" style="padding: 4px 8px; font-size: 12px;">Crear</button>
+            </div>
+        </div>
+
+        <!-- Add Relation Modal -->
+        <div id="modal-add-relation" class="hidden" style="position: absolute; top: 150px; left: 160px; z-index: 30; background: var(--bg-card); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color); width: 260px; box-shadow: var(--shadow-lg);">
+            <h3 style="margin-top:0; font-size: 14px; margin-bottom: 12px;">Nueva Relación UML</h3>
+            <div style="font-size: 12px; color: var(--text-secondary); margin-bottom: 8px;">Tipo de Relación:</div>
+            <select id="select-relation-type" style="width: 100%; margin-bottom: 12px; padding: 6px; background: var(--bg-input); border: 1px solid var(--border-color); color: var(--text-primary); border-radius: 4px;">
+                <option value="ASOCIACION">Asociación (Association)</option>
+                <option value="ASOCIACION_DIRIGIDA">Asociación Dirigida (Direct)</option>
+                <option value="AGREGACION">Agregación (Aggregation)</option>
+                <option value="COMPOSICION">Composición (Composition)</option>
+                <option value="GENERALIZACION">Generalización (Inheritance)</option>
+                <option value="REALIZACION">Realización (Realization)</option>
+                <option value="DEPENDENCIA">Dependencia (Dependency)</option>
+            </select>
+            <div class="flex gap-2 justify-end">
+                <button class="btn btn-ghost" id="btn-cancel-relation" style="padding: 4px 8px; font-size: 12px;">Cancelar</button>
+                <button class="btn btn-primary" id="btn-confirm-relation" style="padding: 4px 8px; font-size: 12px;">Conectar</button>
+            </div>
+        </div>
+
+        <!-- Original Canvas for dynamic rendering -->
+        <div id="canvas-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;">
+            <canvas id="lienzo" style="display: block; width: 100%; height: 100%; cursor: default;"></canvas>
+        </div>
+
+        <!-- Voice Assistant Floating Pill -->
+        <div class="voice-pill" id="voice-controls">
+            <div class="voice-icon" id="btn-voice" style="cursor: pointer;">
+                <span class="material-icons">mic</span>
+            </div>
+            <div class="flex flex-col" style="min-width: 250px;">
+                <span style="font-size: 14px; font-weight: 500;">Escuchando directiva de modelado...</span>
+                <span style="font-size: 11px; color: var(--text-secondary); font-style: italic;" id="voice-feedback">
+                    Di: "crear clase Pedido con atributo total"
+                </span>
+            </div>
+            <div class="voice-wave">
+                <div class="voice-wave-bar"></div>
+                <div class="voice-wave-bar"></div>
+                <div class="voice-wave-bar"></div>
+                <div class="voice-wave-bar"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL PREVISUALIZACION DE CODIGO (NIVEL GLOBAL) -->
+    <div id="modal-preview-code" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.75); backdrop-filter: blur(6px); z-index:99999; justify-content:center; align-items:center;">
+        <div class="card" style="width: 700px; max-width: 90%; background: var(--bg-main); padding: 24px;">
+            <h3 style="margin-top:0; margin-bottom: 16px;">Previsualización de Código (DDL)</h3>
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 14px;">Revisa la estructura generada antes de descargar el proyecto completo en ZIP.</p>
+            <div style="background: #111; padding: 16px; border-radius: 8px; overflow-y: auto; max-height: 400px; font-family: monospace; font-size: 13px; margin-bottom: 16px;">
+                <pre id="preview-code-content" style="margin: 0; white-space: pre-wrap; color: #a6e22e;">Cargando código...</pre>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button class="btn btn-secondary" onclick="document.getElementById('modal-preview-code').style.display='none'">Cerrar</button>
+                <button class="btn btn-primary" id="btn-export-zip-final" style="background: #6366F1;">
+                    <span class="material-icons" style="font-size: 18px;">cloud_download</span> Descargar Proyecto ZIP
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMPORTADOR DE IMAGEN / FOTO UML CON IA (NIVEL GLOBAL) -->
+    <div id="modal-import-image" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index:999999; justify-content:center; align-items:center;">
+        <div class="card" style="width: 580px; max-width: 95%; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.6);">
+            <div class="flex items-center justify-between" style="margin-bottom: 16px;">
+                <div class="flex items-center gap-2">
+                    <span class="material-icons" style="font-size: 24px; color: #8B5CF6;">auto_awesome</span>
+                    <h3 style="margin: 0; font-size: 17px; font-weight: 700;">Importar Diagrama desde Imagen / Foto</h3>
+                </div>
+                <button class="btn btn-ghost" id="btn-close-import-image" onclick="window.closeImageImportModal && window.closeImageImportModal()" style="padding: 4px; color: var(--text-secondary);">
+                    <span class="material-icons">close</span>
+                </button>
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: 16px; font-size: 13px; line-height: 1.4;">
+                Sube o arrastra una foto de tu diagrama UML (dibujado a mano en papel/pizarra o captura digital en formato PNG, JPG, WEBP). La Inteligencia Artificial analizará y reconstruirá las tablas, atributos y relaciones en el lienzo.
+            </p>
+
+            <!-- Dropzone -->
+            <div id="image-dropzone" style="border: 2px dashed #8B5CF6; border-radius: 10px; padding: 24px; text-align: center; cursor: pointer; background: rgba(139, 92, 246, 0.05); transition: all 0.2s ease;">
+                <input type="file" id="input-diagram-image" accept="image/png, image/jpeg, image/jpg, image/webp, image/bmp" style="display: none;">
+                <span class="material-icons" style="font-size: 42px; color: #A78BFA; margin-bottom: 8px;">add_photo_alternate</span>
+                <div style="font-weight: 600; font-size: 14px; margin-bottom: 4px;">Arrastra aquí tu foto o haz clic para seleccionarla</div>
+                <div style="font-size: 12px; color: var(--text-secondary);">Soporta PNG, JPG, JPEG, WEBP y BMP</div>
+            </div>
+
+            <!-- Preview Container -->
+            <div id="image-preview-container" style="display: none; margin-top: 14px; text-align: center; position: relative;">
+                <img id="image-preview" src="" alt="Vista previa" style="max-height: 180px; max-width: 100%; border-radius: 8px; border: 1px solid var(--border-color); object-fit: contain;">
+                <div id="image-preview-info" style="font-size: 11px; color: var(--text-secondary); margin-top: 4px;"></div>
+                <button class="btn btn-ghost" id="btn-remove-selected-image" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.6); color: #fff; padding: 4px; border-radius: 50%;" title="Quitar imagen">
+                    <span class="material-icons" style="font-size: 16px;">delete</span>
+                </button>
+            </div>
+
+            <!-- Opcional API Key Config -->
+            <div style="margin-top: 14px;">
+                <label style="font-size: 12px; font-weight: 600; color: var(--text-secondary); display: block; margin-bottom: 4px;">
+                    Gemini API Key (Opcional - usa la del sistema si ya está configurada):
+                </label>
+                <input type="password" id="input-gemini-api-key" placeholder="AIzaSy..." class="w-full" style="padding: 6px 10px; font-size: 12px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-primary);">
+            </div>
+
+            <!-- Processing status indicator -->
+            <div id="image-process-status" style="display: none; margin-top: 14px; padding: 12px; background: rgba(139, 92, 246, 0.1); border: 1px solid #8B5CF6; border-radius: 8px;">
+                <div class="flex items-center gap-3">
+                    <div class="spinner" style="width: 20px; height: 20px; border: 2px solid rgba(139, 92, 246, 0.3); border-top-color: #8B5CF6; border-radius: 50%; animation: spin 0.8s linear infinite;"></div>
+                    <div style="font-size: 13px; font-weight: 600; color: #C4B5FD;" id="image-process-msg">Analizando diagrama con visión multimodal...</div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-end gap-2" style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                <button class="btn btn-secondary" id="btn-cancel-import-image" onclick="window.closeImageImportModal && window.closeImageImportModal()">Cancelar</button>
+                <button class="btn btn-primary" id="btn-submit-import-image" style="background: #8B5CF6; border-color: #8B5CF6; font-weight: 600;" disabled>
+                    <span class="material-icons" style="font-size: 16px;">auto_fix_high</span> Analizar y Reconstruir en Lienzo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- SPA Logic Script -->
+    <script src="app.js"></script>
+
+    <!-- External Scripts: SockJS and STOMP.js -->
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@5.0.0/bundles/stomp.umd.min.js"></script>
+    
+    <!-- Custom Scripts -->
+    <script src="canvas-collab.js"></script>
+    <script src="voice-assistant.js"></script>
+    <script src="kpi-panel.js"></script>
+
+</body>
+</html>
