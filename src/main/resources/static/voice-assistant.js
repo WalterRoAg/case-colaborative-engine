@@ -146,22 +146,23 @@ class VoiceCommandParser {
             }
         }
 
-        // 8. CREAR CLASE / TABLA CON ATRIBUTOS: "crear clase Cliente con id entero, nombre texto y correo string"
-        const createClassMatch = text.match(/(?:crear|agregar|añadir|nueva)\s+(?:clase|tabla|entidad|interfaz|enumeracion)\s+([A-Za-z0-9_]+)(?:\s+(?:con\s+(?:atributos?|campos?))?\s+(.+))?/i);
+        // 8. CREAR CLASE / TABLA CON O SIN ATRIBUTOS:
+        // Soporta: "crear clase Producto", "crea una clase Cliente", "agregar la tabla Pedido con total double", "nueva clase Alumno con nombre texto"
+        const createClassMatch = text.match(/(?:crear|crea|agregar|agrega|añadir|añade|insertar|inserta|generar|genera|nueva|nuevo)\s+(?:un\s+|una\s+|el\s+|la\s+)?(?:clase|tabla|entidad|interfaz|enumeracion|enum)\s+(?:llamada\s+|de\s+nombre\s+)?([A-Za-z0-9_]+)(?:\s+(?:con\s+(?:los\s+)?(?:atributos?|campos?))?\s+(.+))?/i);
         if (createClassMatch) {
             const className = createClassMatch[1].trim();
             const rest = createClassMatch[2] ? createClassMatch[2].trim() : '';
             
             let stereotype = 'CLASS';
-            if (lower.includes('interfaz')) stereotype = 'INTERFACE';
+            if (lower.includes('interfaz') || lower.includes('interface')) stereotype = 'INTERFACE';
             if (lower.includes('enumeracion') || lower.includes('enum')) stereotype = 'ENUM';
 
             const attributes = [];
             if (rest) {
                 const attrChunks = rest
                     .replace(/\s+y\s+/gi, ',')
-                    .replace(/(?:con\s+)?atributos?\s+/gi, '')
-                    .replace(/(?:con\s+)?campos?\s+/gi, '')
+                    .replace(/(?:con\s+)?(?:los\s+)?atributos?\s+/gi, '')
+                    .replace(/(?:con\s+)?(?:los\s+)?campos?\s+/gi, '')
                     .split(',');
 
                 attrChunks.forEach(chunk => {
@@ -193,8 +194,8 @@ class VoiceCommandParser {
         }
 
         // 9. AGREGAR ATRIBUTO A CLASE EXISTENTE:
-        // Formato A: "agregar atributo total Double a la clase Compra"
-        const addAttrMatch1 = text.match(/(?:agregar|añadir|poner|crear|insertar)\s+(?:el\s+)?(?:atributo|campo)\s+([A-Za-z0-9_]+)(?:\s+(?:de\s+tipo\s+|tipo\s+)?([A-Za-z0-9_]+))?\s*(?:a|en|para)\s+(?:la\s+)?(?:clase|tabla|entidad)?\s*([A-Za-z0-9_]+)/i);
+        // Formato A: "agregar atributo total Double a la clase Compra", "agrega el campo precio en Producto"
+        const addAttrMatch1 = text.match(/(?:agregar|agrega|añadir|añade|poner|pon|crear|crea|insertar|inserta)\s+(?:el\s+|un\s+|una\s+)?(?:atributo|campo)\s+([A-Za-z0-9_]+)(?:\s+(?:de\s+tipo\s+|tipo\s+)?([A-Za-z0-9_]+))?\s*(?:a|en|para)\s+(?:la\s+|el\s+)?(?:clase|tabla|entidad)?\s*([A-Za-z0-9_]+)/i);
         if (addAttrMatch1) {
             return {
                 type: 'ADD_ATTRIBUTE',
@@ -204,7 +205,7 @@ class VoiceCommandParser {
             };
         }
         // Formato B: "agregar a Cliente el atributo telefono String"
-        const addAttrMatch2 = text.match(/(?:agregar|añadir|poner|crear|insertar)\s+(?:a|en|para)\s+(?:la\s+)?(?:clase|tabla|entidad)?\s*([A-Za-z0-9_]+)\s+(?:el\s+)?(?:atributo|campo)\s+([A-Za-z0-9_]+)(?:\s+(?:de\s+tipo\s+|tipo\s+)?([A-Za-z0-9_]+))?/i);
+        const addAttrMatch2 = text.match(/(?:agregar|agrega|añadir|añade|poner|pon|crear|crea|insertar|inserta)\s+(?:a|en|para)\s+(?:la\s+|el\s+)?(?:clase|tabla|entidad)?\s*([A-Za-z0-9_]+)\s+(?:el\s+|un\s+|una\s+)?(?:atributo|campo)\s+([A-Za-z0-9_]+)(?:\s+(?:de\s+tipo\s+|tipo\s+)?([A-Za-z0-9_]+))?/i);
         if (addAttrMatch2) {
             return {
                 type: 'ADD_ATTRIBUTE',
